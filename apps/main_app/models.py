@@ -1,19 +1,25 @@
 from __future__ import unicode_literals
 from django.db import models
 
+def hasNumbers(inputString):
+    return any(char.isdigit() for char in inputString)
 class UserManager(models.Manager):
     def basic_validator(self, postData):
         errors = {}
         if len(postData['first_name']) < 2: 
             # letters only as well
-            errors['first_name'] = "First name must be at least 2 characters; letters only"
+            errors['first_name'] = "First name must be at least 2 characters."
+        if hasNumbers(postData['first_name']):
+            errors['first_name_letters_only'] = "LETTERS ONLY!"
         if len(postData['last_name']) < 2:
             # letters only as well
-            errors['last_name'] = "Last name must be at least 2 characters; letters only"
+            errors['last_name'] = "Last name must be at least 2 characters."
+        if hasNumbers(postData['last_name']):
+            errors['last_name_letters_only'] = "LETTERS ONLY!"
         if postData['email'] == "":
             errors['email'] = "Email is required"
-        if postData['email']:
-            errors['existingemail'] = "This email is already being used"
+        if User.objects.filter(email=postData['email']):
+            errors['email_exists'] = "Email already exists."
         if len(postData['password']) < 8 or postData['password'] == "" or postData['password'] != postData['password_confirmation']:
             errors['password'] = "Password is required.  Please make sure it is at least 8 characters and matches with your password confirmation."
         return errors
