@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Wall</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    
+        <nav class="navbar navbar-dark bg-dark">
+            <h3 class="navbar-brand">CodingDojo Wall</h3>
+                <form action="/logout">
+                    {% csrf_token %}
+                    <input type="submit" value="Log Off">
+                </form>
+        </nav>
+        <div class="container">
+            <div style="background-color: none;" class="jumbotron text-center">
+                <h1 class="display-4">Welcome, {{user.first_name}}</h1>
+                <p class="lead">This is The Wall, a collaborative site where people can share their thoughts and comment on others!  Enjoy and please be respectful.</p>
+            </div>
+            <div class="form-group">
+                <form action="/post-message" method="POST">
+                    {% csrf_token %}
+                    Post a message <textarea class="form-control" name="message"></textarea>
+                    <input style="margin-top: 7px;" type="submit" class="btn btn-primary" value="Post a message">
+                </form>
+            </div>
+            {% for message in all_the_messages%}
+                <div style="margin-top: 30px;">
+                    <h4>{{message.user.first_name}} {{message.user.last_name}} - {{message.created_at}}</h4>
+                    <p style="font-size: 17px;">{{message.message}}</p>
+                    {% if message.user.id == request.session.userid %}
+                    <form action="/delete-message/{{message.id}}" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-danger btn-sm" type="submit" value="Delete">
+                    </form>
+                    {% endif %}
+                    <hr>
+                    {% for comment in message.comments.all %}
+                            {% if comment.user.id == request.session.userid %}
+                            <div style="margin-top: 20px;">
+                                <h6>{{comment.user.first_name}} {{comment.user.last_name}} - {{comment.created_at}}</h6>
+                                <p style="font-size: 14px">{{comment.comment}}</p>
+                                <form action="/delete-comment/{{comment.id}}" method="POST">
+                                    {% csrf_token %}
+                                    <input class="btn btn-danger btn-sm" type="submit" value="Delete">
+                                </form>
+                                </div>
+                            {% else %}
+                            <div style="margin-top: 20px;">
+                                <h6>{{comment.user.first_name}} {{comment.user.last_name}} - {{comment.created_at}}</h6>
+                                <p style="font-size: 14px">{{comment.comment}}</p>
+                            </div>
+                            {% endif %}
+
+                            {% endfor %}
+
+                </div>
+                <div style="margin-top: 20px;" class="form-group">
+                    <form action="/post-comment/{{message.id}}" method="POST">
+                        {% csrf_token %}
+                        Post a comment <textarea class="form-control" name="comment"></textarea>
+                        <input style="margin-top: 7px;" class="btn btn-success" type="submit" value="Post a comment">
+                    </form>
+                </div>
+            {% endfor %}
+            
+        </div>
+    
+ 
+</body>
+</html>
