@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <h3 class="navbar-brand">Welcome, {{user.first_name}}!</h3>
+        
+        <form action="/logout" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Log Out">
+        </form>
+    </nav>
+    <div class="container">
+        <p class="text-right"><a href="/books">Back to Main Page</a></p>
+        <div class="row">
+            
+                {% if book.uploaded_by.id == user.id %}
+                <div class="col">
+                    <div class="form-group">
+                        <form action="/update/{{book.id}}" method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="title" value="{{book.title}}">
+                            <p>Added by: {{user.first_name}} {{user.last_name}}</p>
+                            <p>Added on: {{book.created_at}}</p>
+                            <p>Last updated on: {{book.updated_at}}</p>
+                            Description <textarea class="form-control" name="description">{{book.description}}</textarea>
+                            <input style="margin-top: 7px;" class="btn btn-success" type="submit" value="Update">
+                        </form>
+                        <form action="/deletebook/{{book.id}}" method="POST">
+                            {% csrf_token %}
+                            <input style="margin-top: 7px;" class="btn btn-danger" type="submit" value="Delete">
+                        </form>
+                        {% if book in user.liked_books.all%}
+                            <form action="/unfavorite/{{book.id}}" method="POST">
+                                {% csrf_token %}
+                                <input style="margin-top: 7px;" class="btn btn-warning" type="submit" value="Unfavorite">
+                            </form>
+                        {% else %}
+                            <form action="/favorite/{{book.id}}" method="POST">
+                                {% csrf_token %}
+                                <input style="margin-top: 7px;" class="btn btn-primary" type="submit" value="Favorite">
+                            </form>
+                        {% endif %}
+
+                    </div>
+                </div> 
+                {% else %}
+                <div class="col">
+                    <h3>{{book.title}}</h3>
+                    <p>Added by: {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}</p>
+                    <p>Added on: {{book.created_at}}</p>
+                    <p>Last updated on: {{book.updated_at}}</p>
+                    <p>Description: {{book.description}}</p>
+                    {% if book in user.liked_books.all%}
+                        <form action="/unfavorite/{{book.id}}" method="POST">
+                            {% csrf_token %}
+                            <input style="margin-top: 7px;" class="btn btn-warning" type="submit" value="Unfavorite">
+                        </form>
+                    {% else %}
+                        <form action="/favorite/{{book.id}}" method="POST">
+                            {% csrf_token %}
+                            <input style="margin-top: 7px;" class="btn btn-primary" type="submit" value="Favorite">
+                        </form>
+                    {% endif %}
+                </div>
+                    
+                {% endif %}
+            <div class="col">
+                <h2>Users Who Like This Book:</h2>
+                <ul>
+                {% for user in users_who_like %} 
+                    <li>{{user.first_name}} {{user.last_name}}</li>
+                {% endfor %}
+                </ul>  
+            </div>   
+        </div>
+    </div>
+ 
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <h3 class="navbar-brand">Welcome, {{user.first_name}}!</h3>
+        <form action="/logout" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Log Out">
+        </form>
+    </nav>
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="container">
+        <p class="text-right"><a href="/success">Go Back to Choices Page</a></p>
+        <div class="row">
+            <div class="col">
+                <h4>Add a Favorite Book</h4>
+                <div class="form-group">
+                    <form action="/addbook" method="POST">
+                        {% csrf_token %}
+                        Title <input class="form-control" type="text" name="title">
+                        Description <textarea class="form-control" name="description"></textarea>
+                        <input style="margin-top: 7px;" class="btn btn-success" type="submit" value="Add">
+                    </form>
+                </div>
+            </div>
+            <div class="col">
+                <h4>All Books</h4>
+                {% for book in all_the_books %}
+                <a href="/books/{{book.id}}">{{book.title}}</a>
+                <p>(added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}})</p>
+                {% if book in user.liked_books.all %}
+                <p><strong>This is one of your favorites!</strong></p>
+                {% endif %}
+                {% endfor %}
+            </div>   
+        </div>
+    </div>
+ 
+</body>
+</html>

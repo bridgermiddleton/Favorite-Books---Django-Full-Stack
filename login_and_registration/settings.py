@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'apps.main_app',
     'apps.the_wall',
+    'apps.favorite_books',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

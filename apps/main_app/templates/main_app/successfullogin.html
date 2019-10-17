@@ -16,10 +16,12 @@
         <div class="jumbotron text-center">
             
             <h2 class="display-4">Success! Welcome, {{user.first_name}}!</h2>
-            <p class="lead">Successfully registerd (or logged in)!</p>
+            <p class="lead">Successfully registerd (or logged in)! Where would you like to go?</p>
+            <a class="btn btn-primary" href="/wall">The Wall</a>
+            <a style="margin-left: 10px;" class="btn btn-success" href="/books">Favorite Books</a>
             <form action="/logout" method="POST">
                 {% csrf_token %}
-                <input type="submit" value="Log Out">
+                <input style="margin-top: 20px;" type="submit" value="Log Out">
             </form>
         </div>
     </div>
